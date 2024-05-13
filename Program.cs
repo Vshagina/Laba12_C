@@ -1,49 +1,103 @@
 ﻿using System;
 
-interface IPublishing
+// "Издательство"
+public interface IPublisher
 {
-    string Title { get; set; }
-    string Author { get; set; }
+    string GetBookTitle();
+    string GetAuthor();
 }
 
-interface ILiteraryWork : IPublishing
+// "Пользователь"
+public interface IUser
 {
-    DateTime ReleaseDate { get; set; }
-    int Pages { get; set; }
+    string GetUserName();
+    string GetPassword();
 }
 
-class LiteraryWork : ILiteraryWork
+// "Товар"
+public interface IProduct
 {
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public DateTime ReleaseDate { get; set; }
-    public int Pages { get; set; }
+    void BuyByUser(User user);
 }
 
-interface IUserAccount
+public interface IBook : IPublisher
 {
-    string Username { get; set; }
-    string Password { get; set; }
+    DateTime GetPublicationDate();
+    int GetNumberOfPages();
 }
 
-class UserAccount : IUserAccount
+public class Book : IBook
 {
-    public string Username { get; set; }
-    public string Password { get; set; }
-}
+    private string title;
+    private string author;
+    private DateTime publicationDate;
+    private int numberOfPages;
 
-class ProductUser : IUserAccount, ILiteraryWork
-{
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public DateTime ReleaseDate { get; set; }
-    public int Pages { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
-
-    public void Purchase()
+    public Book(string title, string author, DateTime publicationDate, int numberOfPages)
     {
-        Console.WriteLine($"{Username} купил книгу \"{Title}\".");
+        this.title = title;
+        this.author = author;
+        this.publicationDate = publicationDate;
+        this.numberOfPages = numberOfPages;
+    }
+
+    public string GetBookTitle()
+    {
+        return title;
+    }
+
+    public string GetAuthor()
+    {
+        return author;
+    }
+
+    public DateTime GetPublicationDate()
+    {
+        return publicationDate;
+    }
+
+    public int GetNumberOfPages()
+    {
+        return numberOfPages;
+    }
+}
+
+public class User : IUser
+{
+    private string userName;
+    private string password;
+
+    public User(string userName, string password)
+    {
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public string GetUserName()
+    {
+        return userName;
+    }
+
+    public string GetPassword()
+    {
+        return password;
+    }
+}
+
+public class Product : IProduct
+{
+    private string productName;
+    private string productDescription;
+
+    public Product(string productName, string productDescription)
+    {
+        this.productName = productName;
+        this.productDescription = productDescription;
+    }
+
+    public void BuyByUser(User user)
+    {
+        Console.WriteLine($"{user.GetUserName()} купил {productName}");
     }
 }
 
@@ -51,44 +105,18 @@ class Program
 {
     static void Main(string[] args)
     {
-        LiteraryWork book1 = new LiteraryWork
-        {
-            Title = "Волшебник Изумрудного города",
-            Author = "А. М. Волков",
-            ReleaseDate = new DateTime(1939, 1, 1),
-            Pages = 450
-        };
+        var book1 = new Book("Волшебник страны Оз", "Виктор Флеминг", new DateTime(1955, 1, 1), 200);
+        var book2 = new Book("Волшебник Изумрудного города", "А. М. Волков", new DateTime(1939, 1, 1), 100);
 
-        LiteraryWork book2 = new LiteraryWork
-        {
-            Title = "Волшебник страны Оз",
-            Author = "Виктор Флеминг",
-            ReleaseDate = DateTime.Now,
-            Pages = 300
-        };
+        var user1 = new User("Павел", "1234");
+        var user2 = new User("Виктор", "5678");
 
-        UserAccount user1 = new UserAccount
-        {
-            Username = "Павел",
-            Password = "12345"
-        };
+        var product1 = new Product("Волшебник страны Оз", "Виктор Флеминг");
+        var product2 = new Product("Волшебник Изумрудного города", "А. М. Волков");
 
-        UserAccount user2 = new UserAccount
-        {
-            Username = "Максим",
-            Password = "45678"
-        };
+        product1.BuyByUser(user1);
+        product2.BuyByUser(user2);
 
-        ProductUser productUser = new ProductUser
-        {
-            Title = book1.Title,
-            Author = book1.Author,
-            ReleaseDate = book1.ReleaseDate,
-            Pages = book1.Pages,
-            Username = user1.Username,
-            Password = user1.Password
-        };
-
-        productUser.Purchase();
     }
 }
+
